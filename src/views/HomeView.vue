@@ -5,10 +5,10 @@ import KartuAlat from '@/components/latihan/KartuAlat.vue'
 const judul = 'Latihan Vue: Daftar Alat Laboratorium'
 const kataKunci = ref('')
 const daftarAlat = ref([
-  { kode: 'OPT-001', nama: 'Mikroskop Binokuler', tersedia: 8, total: 10 },
-  { kode: 'UKR-001', nama: 'Timbangan Analitik', tersedia: 1, total: 3 },
-  { kode: 'ELK-001', nama: 'Multimeter Digital', tersedia: 17, total: 20 },
-  { kode: 'PMN-002', nama: 'Oven Laboratorium', tersedia: 0, total: 2 },
+  { kode: 'OPT-001', nama: 'Mikroskop Binokuler', tersedia: 8, total: 10, kondisi: 'baik' },
+  { kode: 'UKR-001', nama: 'Timbangan Analitik', tersedia: 1, total: 3, kondisi: 'rusak_ringan' },
+  { kode: 'ELK-001', nama: 'Multimeter Digital', tersedia: 20, total: 20, kondisi: 'baik' },
+  { kode: 'PMN-002', nama: 'Oven Laboratorium', tersedia: 0, total: 2, kondisi: 'rusak_berat' },
 ])
 
 const alatTampil = computed(() =>
@@ -23,6 +23,11 @@ function pinjam(kode) {
   const alat = daftarAlat.value.find((a) => a.kode === kode)
   if (alat && alat.tersedia > 0) alat.tersedia--
 }
+
+function kembali(kode) {
+  const alat = daftarAlat.value.find((a) => a.kode === kode)
+  if (alat && alat.tersedia < alat.total) alat.tersedia++
+}
 </script>
 
 <template>
@@ -35,7 +40,13 @@ function pinjam(kode) {
     <p class="ketikan">Anda mengetik: "{{ kataKunci }}"</p>
 
     <div class="grid">
-      <KartuAlat v-for="alat in alatTampil" :key="alat.kode" v-bind="alat" @pinjam="pinjam" />
+      <KartuAlat
+        v-for="alat in alatTampil"
+        :key="alat.kode"
+        v-bind="alat"
+        @pinjam="pinjam"
+        @kembali="kembali"
+      />
     </div>
     <p v-if="alatTampil.length === 0">Alat tidak ditemukan.</p>
   </main>
@@ -60,7 +71,7 @@ function pinjam(kode) {
 }
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
   gap: 16px;
 }
 </style>
